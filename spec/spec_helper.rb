@@ -4,6 +4,11 @@
 # loaded once.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+require 'factory_girl'
+
+Dir["./lib/**/*.rb"].each {|f| require f}
+FactoryGirl.find_definitions
+
 RSpec.configure do |config|
   config.treat_symbols_as_metadata_keys_with_true_values = true
   config.run_all_when_everything_filtered = true
@@ -14,4 +19,5 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
+  config.include FactoryGirl::Syntax::Methods
 end
