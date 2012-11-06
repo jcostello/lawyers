@@ -1,0 +1,2 @@
+class CasePermission
+end

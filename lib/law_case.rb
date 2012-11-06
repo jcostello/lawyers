@@ -9,6 +9,4 @@ class LawCase
   def has_owner?
     !self.owner.nil?
   end
-
 end
-

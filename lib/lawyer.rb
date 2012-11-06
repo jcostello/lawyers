@@ -1,8 +1,9 @@
 class Lawyer
-  attr_reader :name, :own_cases
+  attr_reader :name, :own_cases, :law_firm
 
-  def initialize(name)
+  def initialize(name, law_firm)
     @name = name
+    @law_firm = law_firm
     @own_cases = []
   end
 
@@ -12,6 +13,11 @@ class Lawyer
 
     @own_cases << law_case
     law_case.owner = self
+  end
+
+  def grant_case_permission(lawyer, law_case, access)
+    raise Exceptions::GrantPermissionException, "This case doesn't belong to you" unless @own_cases.include?(law_case)
+    raise Exceptions::GrantPermissionException, "The lawyer doesn't belong to the same firm as you" unless @law_firm == lawyer.law_firm
   end
 
   private
