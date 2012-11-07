@@ -26,7 +26,29 @@ class PermissionCollection
     have_case_read_permission?(law_case) || have_lawyer_read_permission?(law_case)
   end
 
+  def can_write?(law_case)
+    return false if have_no_access_permission?(law_case)
+
+    have_case_write_permission?(law_case) || have_lawyer_write_permission?(law_case)
+  end
+
   private 
+
+  def have_case_write_permission?(law_case)
+    @permissions[:case].each do |permission|
+      return true if permission.can_write?(law_case)
+    end
+
+    false
+  end
+
+  def have_lawyer_write_permission?(law_case)
+    @permissions[:lawyer_cases].each do |permission|
+      return true if permission.can_write?(law_case)
+    end
+
+    false
+  end
 
   def have_case_read_permission?(law_case)
     @permissions[:case].each do |permission|
