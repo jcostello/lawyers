@@ -49,6 +49,18 @@ class Lawyer
     self.owns_case?(law_case) || @permissions.can_write?(law_case)
   end
 
+  def write(law_case)
+    raise Exceptions::NoPermissionException, "You dont have permission to write this case ##{law_case.number}" unless can_write?(law_case)
+    
+    puts "you wrote the case number #{law_case.number}"
+  end
+
+  def read(law_case)
+    raise Exceptions::NoPermissionException, "You dont have permission to read this case ##{law_case.number}" unless can_read?(law_case)
+    
+    puts "you readed the case number #{law_case.number}"
+  end
+
   protected
 
   def return_case_permission(law_case)

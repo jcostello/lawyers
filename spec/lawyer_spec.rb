@@ -80,7 +80,7 @@ describe Lawyer do
   describe "#can_read?" do
 
     context "for his own cases" do
-      
+
       before(:each) do
         @law_case = @lawyer.init_case(1234)
       end
@@ -107,11 +107,11 @@ describe Lawyer do
       end
     end
   end
-  
+
   describe "#can_read?" do
 
     context "for his own cases" do
-      
+
       before(:each) do
         @law_case = @lawyer.init_case(1234)
       end
@@ -138,9 +138,9 @@ describe Lawyer do
       end
     end
   end
-  
+
   describe "#remove_case_permission" do
-    
+
     before(:each) do
       @law_case = @lawyer.init_case(1234)
       @another_lawyer = build(:lawyer, name: "pedro")
@@ -158,9 +158,9 @@ describe Lawyer do
       end.should raise_error Exceptions::RemovePermissionException
     end
   end
-  
+
   describe "#remove_lawyer_cases_permission" do
-    
+
     before(:each) do
       @another_lawyer = build(:lawyer, name: "pedro")
       @lawyer.grant_lawyer_cases_permission(@another_lawyer, :full_access);
@@ -179,5 +179,42 @@ describe Lawyer do
       end.should raise_error Exceptions::RemovePermissionException
     end
   end
-end
 
+  describe "#write" do
+    before(:each) do
+      @law_case = @lawyer.init_case(1234)
+    end
+
+    it "should write the case if can" do
+      @lawyer.stub(:can_write?) { true }
+      $stdout.should_receive(:puts).with(/you wrote the case number #{@law_case.number}/i)
+      @lawyer.write(@law_case)
+    end
+
+    it "should raise a exception if cannot write the case" do
+      @lawyer.stub(:can_write?) { false }
+      lambda do
+        @lawyer.write(@law_case)
+      end.should raise_error Exceptions::NoPermissionException
+    end
+  end
+
+  describe "#read" do
+    before(:each) do
+      @law_case = @lawyer.init_case(1234)
+    end
+
+    it "should read the case if can" do
+      @lawyer.stub(:can_read?) { true }
+      $stdout.should_receive(:puts).with(/you readed the case number #{@law_case.number}/i)
+      @lawyer.read(@law_case)
+    end
+
+    it "should raise a exception if cannot read the case" do
+      @lawyer.stub(:can_read?) { false }
+      lambda do
+        @lawyer.read(@law_case)
+      end.should raise_error Exceptions::NoPermissionException
+    end
+  end
+end
