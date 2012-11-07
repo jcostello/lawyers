@@ -8,12 +8,10 @@ class Lawyer
     @own_cases = []
   end
 
-  def take_case(law_case)
-    raise Exceptions::CaseAlreadyTakenException, "You already have taken this case" if already_have_case?(law_case)
-    raise Exceptions::CaseAlreadyTakenException, "The case is already taken" if law_case.has_owner?
-
+  def init_case(number)
+    law_case = LawCase.new(number, self)
     @own_cases << law_case
-    law_case.owner = self
+    law_case
   end
 
   def grant_case_permission(lawyer, law_case, access)

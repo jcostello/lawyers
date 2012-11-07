@@ -5,7 +5,7 @@ class LawFirm
     @name = name
   end
 
-  def ==(law_firm)
-    @name == law_firm.name
+  def ==(another_law_firm)
+    @name == another_law_firm.name
   end
 end

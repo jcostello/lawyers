@@ -2,11 +2,12 @@ class LawCase
   attr_reader :number
   attr_accessor :owner
 
-  def initialize(number)
+  def initialize(number, owner)
     @number = number
+    @owner = owner
   end
 
-  def has_owner?
-    !self.owner.nil?
+  def ==(another_law_case)
+    @number == another_law_case.number
   end
 end
