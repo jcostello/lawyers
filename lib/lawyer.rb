@@ -4,7 +4,7 @@ class Lawyer
   def initialize(name, law_firm)
     @name = name
     @law_firm = law_firm
-    @permissions = Hash.new([])
+    @permissions = hash = Hash.new{|h, k| h[k] = []}
     @own_cases = []
   end
 
@@ -29,14 +29,47 @@ class Lawyer
     lawyer.take_permission(:lawyer_cases, permission)
   end
 
+  def owns_case?(law_case)
+    @own_cases.include?(law_case)
+  end
+
+  def can_read?(law_case)
+    return true if @own_cases.include?(law_case)
+    return false if have_no_access_permission?(law_case)
+    have_case_read_permission?(law_case) || have_lawyer_read_permission?(law_case)
+  end
+
+  def have_case_read_permission?(law_case)
+    @permissions[:case].each do |permission|
+      return true if permission.can_read?(law_case)
+    end
+
+    false
+  end
+
+  def have_lawyer_read_permission?(law_case)
+    @permissions[:lawyer_cases].each do |permission|
+      return true if permission.can_read?(law_case)
+    end
+
+    false
+  end
+
+  def have_no_access_permission?(law_case)
+    @permissions[:case].each do |permission|
+      return true if permission.no_access?(law_case)
+    end
+
+    false
+  end
   protected
   
   def take_permission(key, permission)
     existing_permission = @permissions[key].select { |p| p.target == permission.target }.first
-    if existing_permission
-      existing_permission = permission
-    else
+    if existing_permission.nil?
       @permissions[key] << permission
+    else
+      existing_permission = permission
     end
   end
 
