@@ -188,8 +188,30 @@ describe PermissionCollection do
           @permission_collection.add_lawyer_cases_permission(@lawyer, :no_access)
           @permission_collection.can_read?(@law_case).should be_false
         end
-
       end
+    end
+  end
+
+  describe "#remove_case_permission" do
+    before(:each) do
+      @lawyer = build(:lawyer)
+      @permission_collection.add_case_permission(@law_case, :read_only)
+    end
+
+    it "should add a case permission" do
+      @permission_collection.remove_case_permission(@law_case)
+      @permission_collection.case_permissions.count.should == 0
+    end
+  end
+
+  describe "#remove_lawyer_cases_permission" do
+    before(:each) do
+      @permission_collection.add_lawyer_cases_permission(@lawyer, :read_only)
+    end
+
+    it "should add a case permission" do
+      @permission_collection.remove_lawyer_cases_permission(@lawyer)
+      @permission_collection.lawyer_cases_permissions.count.should == 0
     end
   end
 end

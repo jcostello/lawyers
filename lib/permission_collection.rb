@@ -12,6 +12,14 @@ class PermissionCollection
     add_permission(:lawyer_cases, LawyerCasesPermission.new(lawyer, access))
   end
 
+  def remove_case_permission(law_case)
+    remove_permission(:case, law_case)
+  end
+
+  def remove_lawyer_cases_permission(lawyer)
+    remove_permission(:lawyer_cases, lawyer)
+  end
+
   def case_permissions
     @permissions[:case]
   end
@@ -72,6 +80,10 @@ class PermissionCollection
     end
 
     false
+  end
+
+  def remove_permission(key, target)
+    @permissions[key].delete_if {|permission| permission.target == target } 
   end
 
   def add_permission(key, permission)

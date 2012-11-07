@@ -138,5 +138,46 @@ describe Lawyer do
       end
     end
   end
+  
+  describe "#remove_case_permission" do
+    
+    before(:each) do
+      @law_case = @lawyer.init_case(1234)
+      @another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_case_permission(@another_lawyer, @law_case, :full_access);
+    end
+
+    it "should remove a case permission" do
+      @lawyer.remove_case_permission(@another_lawyer, @law_case)
+      @another_lawyer.permissions.case_permissions.count.should == 0
+    end
+
+    it "should not remove the permission if the case isn't his owns" do
+      lambda do
+        @another_lawyer.remove_case_permission(@another_lawyer, @law_case)
+      end.should raise_error Exceptions::RemovePermissionException
+    end
+  end
+  
+  describe "#remove_lawyer_cases_permission" do
+    
+    before(:each) do
+      @another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_lawyer_cases_permission(@another_lawyer, :full_access);
+    end
+
+    it "should remove a case permission" do
+      @lawyer.remove_lawyer_cases_permission(@another_lawyer)
+      @another_lawyer.permissions.lawyer_cases_permissions.count.should == 0
+    end
+
+    it "should not remove the permission if the case isn't his owns" do
+      another_law_firm = build(:law_firm, name: "Evil law firm")
+      another_lawyer = build(:lawyer, name: "pedro", law_firm: another_law_firm)
+      lambda do
+        @lawyer.remove_lawyer_cases_permission(another_lawyer)
+      end.should raise_error Exceptions::RemovePermissionException
+    end
+  end
 end
 

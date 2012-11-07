@@ -27,6 +27,16 @@ class Lawyer
     lawyer.take_lawyer_cases_permission(self, access)
   end
 
+  def remove_case_permission(lawyer, law_case)
+    raise Exceptions::RemovePermissionException, "This case doesn't belong to you" unless @own_cases.include?(law_case)
+    lawyer.return_case_permission(law_case)
+  end
+
+  def remove_lawyer_cases_permission(lawyer)
+    raise Exceptions::RemovePermissionException, "The lawyer doesn't belong to the same firm as you" unless @law_firm == lawyer.law_firm
+    lawyer.return_lawyer_cases_permission(self)
+  end
+
   def owns_case?(law_case)
     @own_cases.include?(law_case)
   end
@@ -40,7 +50,15 @@ class Lawyer
   end
 
   protected
+
+  def return_case_permission(law_case)
+    @permissions.remove_case_permission(law_case)
+  end
   
+  def return_lawyer_cases_permission(lawyer)
+    @permissions.remove_lawyer_cases_permission(lawyer)
+  end
+
   def take_case_permission(law_case, access)
     @permissions.add_case_permission(law_case, access)
   end
