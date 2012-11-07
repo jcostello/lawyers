@@ -2,9 +2,9 @@ class Lawyer
   attr_reader :name, :own_cases, :law_firm, :permissions
 
   def initialize(name, law_firm)
+    @permissions = PermissionCollection.new
     @name = name
     @law_firm = law_firm
-    @permissions = hash = Hash.new{|h, k| h[k] = []}
     @own_cases = []
   end
 
@@ -18,15 +18,13 @@ class Lawyer
     raise Exceptions::GrantPermissionException, "This case doesn't belong to you" unless @own_cases.include?(law_case)
     raise Exceptions::GrantPermissionException, "The lawyer doesn't belong to the same firm as you" unless @law_firm == lawyer.law_firm
 
-    permission = CasePermission.new(law_case, access)
-    lawyer.take_permission(:case, permission)
+    lawyer.take_case_permission(law_case, access)
   end
 
   def grant_lawyer_cases_permission(lawyer, access)
     raise Exceptions::GrantPermissionException, "The lawyer doesn't belong to the same firm as you" unless @law_firm == lawyer.law_firm
 
-    permission = LawyerCasesPermission.new(self, access)
-    lawyer.take_permission(:lawyer_cases, permission)
+    lawyer.take_lawyer_cases_permission(self, access)
   end
 
   def owns_case?(law_case)
@@ -34,43 +32,21 @@ class Lawyer
   end
 
   def can_read?(law_case)
-    return true if @own_cases.include?(law_case)
-    return false if have_no_access_permission?(law_case)
-    have_case_read_permission?(law_case) || have_lawyer_read_permission?(law_case)
+    self.owns_case?(law_case) || @permissions.can_read?(law_case)
   end
 
-  def have_case_read_permission?(law_case)
-    @permissions[:case].each do |permission|
-      return true if permission.can_read?(law_case)
-    end
-
-    false
+  def can_write?(law_case)
+    self.owns_case?(law_case) || @permissions.can_write?(law_case)
   end
 
-  def have_lawyer_read_permission?(law_case)
-    @permissions[:lawyer_cases].each do |permission|
-      return true if permission.can_read?(law_case)
-    end
-
-    false
-  end
-
-  def have_no_access_permission?(law_case)
-    @permissions[:case].each do |permission|
-      return true if permission.no_access?(law_case)
-    end
-
-    false
-  end
   protected
   
-  def take_permission(key, permission)
-    existing_permission = @permissions[key].select { |p| p.target == permission.target }.first
-    if existing_permission.nil?
-      @permissions[key] << permission
-    else
-      existing_permission = permission
-    end
+  def take_case_permission(law_case, access)
+    @permissions.add_case_permission(law_case, access)
+  end
+
+  def take_lawyer_cases_permission(lawyer, access)
+    @permissions.add_lawyer_cases_permission(lawyer, access)
   end
 
   private
