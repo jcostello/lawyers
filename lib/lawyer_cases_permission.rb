@@ -14,8 +14,6 @@ class LawyerCasesPermission
     @target.owns_case?(law_case) && has_write_access?
   end
 
-  private
-
   def has_read_access?
     @access == :read_only || @access == :full_access
   end

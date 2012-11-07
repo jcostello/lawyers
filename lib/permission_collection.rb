@@ -28,6 +28,13 @@ class PermissionCollection
     @permissions[:lawyer_cases]
   end
 
+  def all_redeable_cases
+    law_cases = []
+    law_cases.concat(@permissions[:case].collect { |permission| permission.target if permission.has_read_access? })
+    law_cases.concat(@permissions[:lawyer_cases].collect { |permission| permission.target.own_cases if permission.has_read_access? })
+    law_cases.flatten.uniq
+  end
+
   def can_read?(law_case)
     return false if have_no_access_permission?(law_case)
 

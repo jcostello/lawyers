@@ -12,23 +12,12 @@ describe PermissionCollection do
       @permission_collection.add_case_permission(@law_case, :read_only)
       @permission_collection.case_permissions.count.should == 1
     end
-
-    it "should raise a exception for invalid access" do
-      pending
-      @permission_collection.add_case_permission(@law_case, :invalid_access)
-    end
   end
 
   describe "#add_lawyer_cases_permission" do
     it "should add a case permission" do
       @permission_collection.add_lawyer_cases_permission(@lawyer, :read_only)
       @permission_collection.lawyer_cases_permissions.count.should == 1
-    end
-
-    it "should raise a exception for invalid access" do
-      pending
-      @permission_collection.add_lawyer_cases_permission(@lawyer, :invalid_access)
-      @permission_collection.lawyer_cases_permissions == [case_permission]
     end
   end
 
@@ -212,6 +201,25 @@ describe PermissionCollection do
     it "should add a case permission" do
       @permission_collection.remove_lawyer_cases_permission(@lawyer)
       @permission_collection.lawyer_cases_permissions.count.should == 0
+    end
+  end
+
+  describe "#all_redeable_cases" do
+    before(:each) do
+      @lawyer = build(:lawyer)
+      @law_case1 = build(:law_case, number: 1234)
+      @law_case2 = build(:law_case, number: 2345)
+      @law_case3 = build(:law_case, number: 3456)
+      @law_case4 = @lawyer.init_case(4567)
+      @law_case5 = @lawyer.init_case(5678)
+      @permission_collection.add_case_permission(@law_case1, :read_only)
+      @permission_collection.add_case_permission(@law_case2, :read_only)
+      @permission_collection.add_case_permission(@law_case3, :read_only)
+      @permission_collection.add_lawyer_cases_permission(@lawyer, :read_only)
+    end
+
+    it "should return all cases that can read" do
+      @permission_collection.all_redeable_cases.should =~ [@law_case1, @law_case2, @law_case3, @law_case4,  @law_case5] 
     end
   end
 end

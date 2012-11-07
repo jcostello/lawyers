@@ -18,8 +18,6 @@ class CasePermission
     @target == law_case && @access == :no_access
   end
 
-  private
-
   def has_read_access?
     @access == :read_only || @access == :full_access
   end

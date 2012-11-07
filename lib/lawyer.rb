@@ -61,6 +61,10 @@ class Lawyer
     puts "you readed the case number #{law_case.number}"
   end
 
+  def all_redeable_cases
+    @permissions.all_redeable_cases
+  end
+
   protected
 
   def return_case_permission(law_case)
