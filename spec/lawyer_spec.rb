@@ -52,5 +52,29 @@ describe Lawyer do
       another_lawyer.permissions[:case].count.should == 1
     end
   end
+  
+  describe "#grant_lawyer_cases_permission" do
+
+    it "should not give the permission if the lawyer isnt from the same law firm" do
+      another_law_firm = build(:law_firm, name: "Evil law firm")
+      another_lawyer = build(:lawyer, name: "pedro", law_firm: another_law_firm)
+      lambda do
+        @lawyer.grant_lawyer_cases_permission(another_lawyer, :full_access);
+      end.should raise_error Exceptions::GrantPermissionException
+    end
+
+    it "should add the permission the lawyer" do
+      another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_lawyer_cases_permission(another_lawyer, :full_access);
+      another_lawyer.permissions[:lawyer_cases].count.should == 1
+    end
+    
+    it "should update the permission if it already exist" do
+      another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_lawyer_cases_permission(another_lawyer, :full_access);
+      @lawyer.grant_lawyer_cases_permission(another_lawyer, :read_only);
+      another_lawyer.permissions[:lawyer_cases].count.should == 1
+    end
+  end
 end
 

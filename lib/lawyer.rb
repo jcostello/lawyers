@@ -22,6 +22,13 @@ class Lawyer
     lawyer.take_permission(:case, permission)
   end
 
+  def grant_lawyer_cases_permission(lawyer, access)
+    raise Exceptions::GrantPermissionException, "The lawyer doesn't belong to the same firm as you" unless @law_firm == lawyer.law_firm
+
+    permission = LawyerCasesPermission.new(self, access)
+    lawyer.take_permission(:lawyer_cases, permission)
+  end
+
   protected
   
   def take_permission(key, permission)
