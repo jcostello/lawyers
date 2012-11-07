@@ -53,9 +53,18 @@ describe Lawyer do
     end
 
     it "should add the permission the lawyer" do
+      @lawyer.take_case(@law_case)
+      another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_case_permission(another_lawyer, @law_case, :full_access);
+      another_lawyer.permissions[:case].count.should == 1
     end
     
     it "should update the permission if it already exist" do
+      @lawyer.take_case(@law_case)
+      another_lawyer = build(:lawyer, name: "pedro")
+      @lawyer.grant_case_permission(another_lawyer, @law_case, :full_access);
+      @lawyer.grant_case_permission(another_lawyer, @law_case, :read_only);
+      another_lawyer.permissions[:case].count.should == 1
     end
   end
 end
